@@ -23,7 +23,6 @@ COMP 9130 Final Project &nbsp;|&nbsp; Savina Cai &nbsp;|&nbsp; 2026
 <p><i>Interactive Streamlit dashboard — risk map, model comparison, SHAP analysis, version history</i></p>
 </div>
 
-> Don't have the screenshot yet? Take one after launching the dashboard locally and save it to `figures/dashboard_preview.png`.
 
 ---
 
