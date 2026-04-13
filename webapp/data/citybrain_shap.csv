@@ -1,0 +1,16 @@
+feature,importance
+sl_risk_7,0.2193
+sl_high_15,0.1251
+sl_risk_15,0.1173
+sl_risk_3,0.1139
+source,0.1066
+sl_high_7,0.0821
+pothole_total,0.0724
+is_bikeway,0.0703
+length,0.0642
+tree_avg_height,0.0571
+sewer_combined_pct,0.0503
+sl_high_3,0.0491
+sl_med_7,0.0486
+tree_avg_diameter,0.0474
+permit_count_200m,0.0452

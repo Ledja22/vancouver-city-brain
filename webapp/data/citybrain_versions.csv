@@ -1,0 +1,15 @@
+version,f1,key_change
+v1,0.3915,XGBoost baseline
+v2,0.4411,Focal Loss + feature engineering
+v3,0.4495,Gated Attention Fusion
+v5,0.4941,Rebalanced 3-class labels
+v6,0.4941,CrossAttention + Ensemble
+v7,0.5209,3-model ensemble
+v8,0.5183,2-branch (removed temporal)
+v9,0.5207,Clean feature separation + spatial lag
+v10,0.5259,5-Fold CV Stacking
+v11,0.5322,18 infrastructure features
+v12,0.504,ResidualBlock + Transformer + SMOTE-ENN
+v13,0.5452,10-Fold Stacking + Optuna HPO
+v14,0.5332,No resampling (regression)
+v15,0.5540925805017504,SMOTE-only + regularised meta-learner
