@@ -98,7 +98,8 @@ The final notebook implements the completed version of the pipeline and delivers
 
 ## Team Member Contributions
 
-- **Savina Cai** — primary author, notebook architecture, feature engineering, model development, evaluation, and final reporting.
+ - **Savina Cai** — primary author of the final notebook pipeline, responsible for code architecture, data ingestion, stacking ensemble training, custom loss implementation, threshold optimization, and quantitative evaluation.
+ - **Ledja Halltari** — contributor to data preprocessing and code workflow validation, geospatial feature engineering, hybrid fusion model development, pipeline reproducibility checks, and review of modeling/code process changes.
 
 ## Repository Contents
 
