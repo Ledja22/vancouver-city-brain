@@ -1,155 +1,142 @@
-# Vancouver CityBrain — Vancouver Pavement Risk Assessment
+# Vancouver CityBrain
 
-<div align="center">
+A data-driven pavement risk assessment system for Vancouver, developed as a COMP 9130 final project. The repository combines geospatial feature engineering, tabular and neural network models, multi-model stacking, and an interactive dashboard to prioritize pavement maintenance risk.
 
-**A multi-model stacking ensemble for 3-class pavement risk classification (Low / Medium / High) using 10 open datasets from the City of Vancouver.**
+## Project Overview
 
-COMP 9130 Final Project &nbsp;|&nbsp; Savina Cai &nbsp;|&nbsp; 2026
+Vancouver CityBrain predicts pavement risk using open City of Vancouver infrastructure, traffic, complaint, and weather datasets. The model is trained to classify pavement condition into three risk categories: `Low`, `Medium`, and `High`.
 
-![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)
-![XGBoost](https://img.shields.io/badge/XGBoost-2.x-189FDD)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-FF4B4B?logo=streamlit&logoColor=white)
-![Macro F1](https://img.shields.io/badge/Macro_F1-0.5446-2c7be5)
+Key capabilities:
+- Multi-source geospatial feature engineering
+- Road-level and tabular feature fusion using a transformer-style architecture
+- 10-fold stacking ensemble with an XGBoost meta-learner
+- Ordinal-aware loss functions for safer risk prediction
+- Interactive dashboard for model outputs, version comparison, and SHAP analysis
 
-</div>
+## Highlights
 
----
+- **Target**: 3-class pavement risk classification for road pavement condition
+- **Final model**: `CityBrain v15` with SMOTE-only resampling and a regularised XGBoost meta-learner
+- **Core architecture**: Road-MLP (12d) + Tabular-MLP (44d) → Cross-Attention Fusion → 10-Fold model stacking
+- **Final performance**: Macro F1 = **0.5541** on the held-out validation/test dataset
+- **Improvement**: +0.1626 absolute F1 gain over the baseline v1 model (0.3915 → 0.5541)
 
-## Dashboard Preview
+## Repository Structure
 
-<div align="center">
-<img src="figures/dashboard_preview.png" alt="CityBrain Dashboard" width="90%">
-<p><i>Interactive Streamlit dashboard — risk map, model comparison, SHAP analysis, version history</i></p>
-</div>
-
-
----
-
-## Architecture
-
+```text
+vancouver-city-brain/
+├── code/
+│   ├── CityBrain_v_finished.ipynb         # Final modelling pipeline
+│   ├── EDA/                               # Exploratory data analysis notebooks
+│   │   ├── CityBrain_InfraEDA.ipynb
+│   │   └── CityBrain_initial_EDA.ipynb
+│   └── Improve_process/                   # Model iteration history
+│       ├── CityBrain_v1_Baseline.ipynb
+│       ├── CityBrain_v10_Stacking.ipynb
+│       ├── CityBrain_v11_RichFeatures.ipynb
+│       ├── CityBrain_v12_Improved.ipynb
+│       ├── CityBrain_v13_StackingPlus.ipynb
+│       ├── CityBrain_v2_Enhanced.ipynb
+│       ├── CityBrain_v3_GatedFusion.ipynb
+│       ├── CityBrain_v5_Rebalanced3Class.ipynb
+│       ├── CityBrain_v6_Rebalanced3Class.ipynb
+│       ├── CityBrain_v7_Feature_enigineering.ipynb
+│       ├── CityBrain_v8_TwoBranch.ipynb
+│       └── CityBrain_v9_CleanFeatures.ipynb
+├── figures/                               # Visualizations and dashboard screenshots
+├── webapp/
+│   ├── app.py                             # Streamlit dashboard application
+│   ├── requirements.txt                   # Webapp dependencies
+│   └── data/                              # Dashboard CSV data exports
+└── README.md                              # Project documentation
 ```
-Road Features (12d)        Tabular Features (44d)
-       │                          │
-  ┌────▼────┐              ┌──────▼──────┐
-  │Road-MLP │              │ Tabular-MLP │
-  └────┬────┘              └──────┬──────┘
-       └──────────┬───────────────┘
-            ┌─────▼──────┐
-            │CrossAttention│
-            │   Fusion    │
-            └─────┬──────┘
-                  │
-   ┌──────────────┼──────────────────┐
-   │              │                  │
- Fusion    XGBoost/CatBoost    LightGBM/ExtraTrees
-   │              │                  │
-   └──────┬───────┴──────────────────┘
-    ┌─────▼──────┐
-    │  10-Fold   │
-    │  Stacking  │ ← XGBoost meta-learner (regularised)
-    └─────┬──────┘
-    ┌─────▼──────┐
-    │ Threshold  │ ← differential evolution
-    │  Tuning    │
-    └─────┬──────┘
-          ▼
-   Low / Medium / High
-```
-
----
 
 ## Results
 
-| Metric | Value |
-|--------|-------|
-| **Macro F1** | 0.5446 |
-| **Accuracy** | 55.6% |
-| **High→Low misclassification** | 7.1% (conservative) |
-| **Top SHAP feature** | `sl_risk_7` (spatial lag) |
-| **Total improvement** | v1 (0.39) → v15 (0.54), **+39%** |
+The final pipeline is supported by a version history with gradual model improvements:
 
----
+| Version | Macro F1 | Key change |
+|--------|----------|------------|
+| v1 | 0.3915 | XGBoost baseline |
+| v5 | 0.4941 | 3-class label rebalancing |
+| v11 | 0.5322 | +18 infrastructure features |
+| v13 | 0.5452 | 10-fold stacking + Optuna HPO |
+| v15 | 0.5541 | SMOTE-only + regularised meta-learner |
 
-## Project Structure
+Major results:
 
-```
-AI-FinalProject/
-├── code/
-│   ├── EDA/                            # Exploratory data analysis
-│   │   ├── CityBrain_InfraEDA.ipynb    
-│   │   └── CityBrain_initial_EDA.ipynb
-│   ├── Improve_process/        
-│   │   └── CityBrain_v{1-13}.ipynb        # Model iteration history
-│   └── CityBrain_v_finished.ipynb 
-├── webapp/
-│   ├── app.py                          # Streamlit dashboard
-│   ├── requirements.txt                # Python dependencies
-│   └── data/                           # Dashboard CSV data
-├── data/                               # Raw datasets (from Drive)
-├── figures/                            # Plots & screenshots
-└── README.md
-```
+- **Final model macro F1**: 0.5541
+- **Relative performance lift**: +41.6% from the baseline v1 model
+- **Primary risk classes**: Low / Medium / High, with class-specific penalties for severe misclassification
 
----
+## Technical Summary
 
-## Quick Start
+The final model architecture is built around a hybrid fusion and ensemble pipeline:
 
-### 1. Clone & download data
+- **Road input branch**: 12 road-specific features, encoded with a 128→64 MLP
+- **Tabular input branch**: 44 engineered infrastructure, weather, complaint, and spatial features, encoded with a 256→128 MLP
+- **Fusion layer**: cross-attention fusion that combines road and tabular embeddings
+- **Stacking ensemble**: predictions from the fusion model and several tree-based learners are combined via 10-fold stacking
+- **Meta-learner**: regularised XGBoost receives stacked out-of-fold predictions and learns the final combination
+- **Threshold tuning**: differential evolution optimizes class thresholds for the ordinal risk labels
 
-```bash
-git clone git@github.com:Ledja22/vancouver-city-brain.git
-cd AI-FinalProject
-```
+Additional modeling design:
+- SMOTE-only resampling for balanced training data
+- Custom loss functions for focal weighting, ordinal penalty, and cost-sensitive misclassification
+- Geospatial feature extraction from infrastructure layers, street network, and complaint density
 
-Raw datasets are too large for GitHub. Download from Google Drive:
+## Getting Started
 
-> **[Google Drive — AI-FinalProject](https://drive.google.com/drive/folders/1GaJUk_7bzcHntYOaM2vXbYqX1Sdwq3_h?usp=sharing)**
-
-### 2. Run the model (Colab)
-
-1. Upload the project to Google Drive
-2. Open `code/CityBrain_v15_finished.ipynb` in Colab
-3. Set runtime to **GPU**
-4. Run all cells — training takes ~15 min
-
-### 3. Export dashboard data (Colab)
-
-After training completes, download the generated CSV to `webapp/data/`.
-
-### 4. Launch the dashboard (local)
+### 1. Install dependencies
 
 ```bash
-cd webapp
-pip install -r requirements.txt
+cd vancouver-city-brain/webapp
+python -m pip install -r requirements.txt
+```
+
+The notebook pipelines also require:
+- `pandas`
+- `numpy`
+- `scikit-learn`
+- `torch`
+- `xgboost` / `lightgbm` / `catboost`
+- `scipy`
+
+### 2. Prepare data
+
+Real-world data is not included in the repository. The notebook expects preprocessed CSV exports in the project data directory.
+
+The core data used by the project includes:
+- Pavement condition labels and geometry
+- Public street network and street-use attributes
+- Right-of-way widths
+- Repair and infrastructure project data
+- Water mains, sewer, tree, permit, bus, and utility datasets
+
+### 3. Run the notebook
+
+Open `code/CityBrain_v_finished.ipynb` and execute the cells sequentially. The notebook covers:
+- data loading and cleaning
+- spatial and infrastructure feature engineering
+- model training, evaluation, and threshold tuning
+- result export for the dashboard
+
+### 4. Launch the dashboard
+
+```bash
+cd vancouver-city-brain/webapp
 streamlit run app.py
 ```
 
-Open **http://localhost:8501** in your browser.
+Then open the local URL shown by Streamlit.
 
-> **Demo mode:** The dashboard works out of the box with sample data. Replace `webapp/data/` CSVs with real exports for production results.
+## Notes
 
----
+- The dashboard reads precomputed CSV data from `webapp/data/`.
+- The final model is designed to protect against severe misclassification by penalizing distance between predicted and true risk levels.
+- The repository documents model evolution across versions v1 through v15.
 
-## Datasets
+## License and Credits
 
-All sourced from [City of Vancouver Open Data Portal](https://opendata.vancouver.ca/):
-
-| Dataset | Records | Role |
-|---------|---------|------|
-| Pavement Condition | 13K | Target labels |
-| Street Intersections | 7K | Road graph |
-| Water Mains | 67K | Infrastructure age |
-| Sewer System | 40K | Drainage risk |
-| Street Trees | 186K | Canopy features |
-| Building Permits | 625K | Development density |
-| Bikeways | 3.7K | Road usage |
-| Truck Routes | 3 | Heavy traffic |
-| Snow Routes | 270 | Maintenance priority |
-| Manholes & Catch Basins | 81K | Utility density |
-
----
-
-## License
-
-This project was developed for academic purposes (COMP 9130). All data is from public open data sources.
+This project was developed for academic purposes as a COMP 9130 final project.
+All data and code are intended for research and analysis of public infrastructure risk.
